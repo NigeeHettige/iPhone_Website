@@ -1,12 +1,13 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ModelView from "./ModelView";
 import { yellowImg } from "../utils";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";
 import { View } from "@react-three/drei";
 import { models, sizes } from "../constants";
+import { animationWithGsapTimeLine } from "../utils/animation";
 
 const Model = () => {
   const [size, setSize] = useState("small");
@@ -27,6 +28,23 @@ const Model = () => {
   //rotation
   const [smallRotation, setSmallRotation] = useState(0);
   const [largeRotation, setLargeRotation] = useState(0);
+
+  const tl = gsap.timeline();
+  useEffect(() => {
+    if (size === 'large') {
+      animationWithGsapTimeLine(tl, small, smallRotation, '#view1', '#view2', {
+        transform: 'translateX(-100%)',
+        duration: 2,
+      });
+    }
+
+    if (size === 'small') {
+      animationWithGsapTimeLine(tl, large, largeRotation, '#view2', '#view1', {
+        transform: "translateX(0)",
+        duration: 2,
+      });
+    }
+  }, [size]);
 
   useGSAP(() => {
     gsap.to("#heading", {
@@ -98,7 +116,7 @@ const Model = () => {
                       backgroundColor: size === value ? "white" : "transparent",
                       color: size === value ? "black" : "white",
                     }}
-                    onClick={()=>setSize(value)}
+                    onClick={() => setSize(value)}
                   >
                     {label}
                   </span>
